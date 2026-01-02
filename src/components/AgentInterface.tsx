@@ -52,7 +52,7 @@ export const AgentInterface: React.FC = () => {
                 <div>
                     <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center gap-3">
                         <Bot className="text-blue-600" size={32} />
-                        AnyGift Project Agent
+                        PM Agent
                     </h1>
                     <p className="text-gray-500 mt-1">Managing {projects.length} active onboarding projects</p>
                 </div>
