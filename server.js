@@ -2,10 +2,15 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 app.use(cors());
 app.use(express.json());
@@ -62,6 +67,44 @@ app.get('/api/hubspot/deals/:id/communications', async (req, res) => {
     } catch (error) {
         console.error('HubSpot Communications API Error:', error.response?.data || error.message);
         res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
+    }
+});
+
+// Proxy endpoint for AI Analysis via Gemini
+app.post('/api/analyze', async (req, res) => {
+    try {
+        const { messages, projectName, deadline } = req.body;
+
+        if (!messages || messages.length === 0) {
+            return res.json({ sentimentScore: 50, atRisk: false, summary: "No recent communications." });
+        }
+
+        const prompt = `
+            Analyze the following communications for an onboarding project called "${projectName}".
+            The current project deadline is ${deadline}.
+            
+            Communications (Newest first):
+            ${messages.map(m => `Date: ${m.date}\nBody: ${m.body}`).join('\n---\n')}
+            
+            Based on these, determine if the project is "At Risk" (Client is frustrated, there are blockers, or deadline is clearly impossible).
+            
+            Return ONLY a valid JSON object with:
+            - sentimentScore: (0 to 100, where 0 is extremely angry/frustrated and 100 is extremely happy)
+            - atRisk: (true/false)
+            - summary: (A 1-sentence summary of the current health or primary blocker)
+        `;
+
+        const result = await model.generateContent(prompt);
+        const responseText = result.response.text();
+
+        // Extract JSON from response (handle potential markdown formatting)
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        const analysis = JSON.parse(jsonMatch ? jsonMatch[0] : responseText);
+
+        res.json(analysis);
+    } catch (error) {
+        console.error('Gemini API Error:', error.message);
+        res.status(500).json({ sentimentScore: 50, atRisk: false, summary: "Analysis failed." });
     }
 });
 

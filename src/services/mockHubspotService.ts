@@ -54,11 +54,11 @@ export const mockProjects: Project[] = [
             { id: 't2', name: 'Prepare Slide Deck', assignee: 'Us', dueDate: '2024-02-29', status: 'Pending' }
         ],
         lastActivityDate: '2024-02-25',
-        owner: 'Taro Yamada',
+        owner: 'Sarah',
         emails: [],
         dismissedAlerts: [],
         activityLog: [
-            { id: 'l1', date: '2024-02-25', type: 'Note', description: 'Intake form sent to client.', user: 'Taro Yamada' }
+            { id: 'l1', date: '2024-02-25', type: 'Note', description: 'Intake form sent to client.', user: 'Sarah' }
         ]
     },
     {
@@ -70,7 +70,7 @@ export const mockProjects: Project[] = [
             { id: 't3', name: 'Provide API Keys', assignee: 'Client', dueDate: '2024-02-18', status: 'Pending' } // Blocker
         ],
         lastActivityDate: '2024-02-15',
-        owner: 'Hanako Suzuki',
+        owner: 'James',
         emails: [
             {
                 id: 'e2',
@@ -84,7 +84,7 @@ export const mockProjects: Project[] = [
         dismissedAlerts: [],
         activityLog: [
             { id: 'l2', date: '2024-02-19', type: 'Email', description: 'Received email re: API Keys delay', user: 'Client' },
-            { id: 'l3', date: '2024-02-15', type: 'Milestone', description: 'API Integration milestone set.', user: 'Hanako Suzuki' }
+            { id: 'l3', date: '2024-02-15', type: 'Milestone', description: 'API Integration milestone set.', user: 'James' }
         ]
     },
     {
@@ -94,7 +94,7 @@ export const mockProjects: Project[] = [
         nextMilestone: { name: 'User Training', dueDate: '2024-02-10', status: 'Pending' },
         tasks: [],
         lastActivityDate: '2024-01-20',
-        owner: 'Taro Yamada',
+        owner: 'Sarah',
         emails: [],
         dismissedAlerts: [],
         activityLog: []
@@ -106,7 +106,7 @@ export const mockProjects: Project[] = [
         nextMilestone: { name: 'Go Live', dueDate: '2024-02-15', status: 'Pending' },
         tasks: [],
         lastActivityDate: '2024-02-18',
-        owner: 'Hanako Suzuki',
+        owner: 'James',
         emails: [
             {
                 id: 'e3',

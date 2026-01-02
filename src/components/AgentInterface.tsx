@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Bot, RefreshCw, Filter } from 'lucide-react';
-import { getRealProjects, performRealAction } from '../services/HubspotService';
+import { getRealProjects } from '../services/HubspotService';
 import { performAction } from '../services/mockHubspotService'; // Keeping for 'dismiss' local state logic if needed, or we move it.
 import type { Project } from '../services/mockHubspotService';
 import { runAnalysis } from '../services/analysisEngine';
@@ -9,6 +9,10 @@ import type { Alert } from '../services/analysisEngine';
 import { ProjectCard } from './ProjectCard';
 import { CriticalSummary } from './CriticalSummary';
 import { ProjectTimeline } from './ProjectTimeline';
+import { AlertStream } from './AlertStream';
+import { ProjectTable } from './ProjectTable';
+import { LayoutGrid, List, User } from 'lucide-react';
+import { clsx } from 'clsx';
 
 export const AgentInterface: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -16,6 +20,9 @@ export const AgentInterface: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [timelineProject, setTimelineProject] = useState<Project | null>(null);
     const [lastSynced, setLastSynced] = useState<string>('Just now');
+    const [filterStatus, setFilterStatus] = useState<string>('All');
+    const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+    const [ownerFilter, setOwnerFilter] = useState<string>('All');
 
     const loadData = async () => {
         setLoading(true);
@@ -60,12 +67,75 @@ export const AgentInterface: React.FC = () => {
             </header>
 
             <main className="max-w-6xl mx-auto">
+                {/* Global Alert Stream */}
+                {!loading && filterStatus === 'All' && alerts.length > 0 && <AlertStream alerts={alerts} />}
+
+                {/* Global Filter Bar */}
+                {!loading && (
+                    <div className="mb-6 flex flex-wrap gap-4 items-center justify-between border-b pb-6 border-gray-100">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                                <User size={14} /> Owner:
+                            </span>
+                            <select
+                                value={ownerFilter}
+                                onChange={(e) => setOwnerFilter(e.target.value)}
+                                className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            >
+                                <option value="All">All Members</option>
+                                <option value="Sarah">Sarah</option>
+                                <option value="James">James</option>
+                            </select>
+                        </div>
+
+                        <div className="bg-gray-100 p-1 rounded-lg flex items-center">
+                            <button
+                                onClick={() => setViewMode('cards')}
+                                className={clsx(
+                                    "p-1.5 rounded-md transition flex items-center gap-2 text-sm px-3",
+                                    viewMode === 'cards' ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                <LayoutGrid size={16} /> Card View
+                            </button>
+                            <button
+                                onClick={() => setViewMode('table')}
+                                className={clsx(
+                                    "p-1.5 rounded-md transition flex items-center gap-2 text-sm px-3",
+                                    viewMode === 'table' ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                <List size={16} /> Table View
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Critical Summary */}
-                {!loading && <CriticalSummary alerts={alerts} projects={projects} />}
+                {!loading && (
+                    <CriticalSummary
+                        alerts={alerts}
+                        projects={projects}
+                        onFilterChange={setFilterStatus}
+                        activeFilter={filterStatus}
+                    />
+                )}
 
                 {/* Project Grid */}
                 <div className="flex justify-between items-end mb-4">
-                    <h2 className="text-lg font-bold text-gray-800">Active Projects</h2>
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-lg font-bold text-gray-800">
+                            {filterStatus === 'All' ? 'Active Projects' : `${filterStatus} Projects`}
+                        </h2>
+                        {filterStatus !== 'All' && (
+                            <button
+                                onClick={() => setFilterStatus('All')}
+                                className="text-xs text-blue-600 hover:underline"
+                            >
+                                Clear filter
+                            </button>
+                        )}
+                    </div>
                     <div className="flex gap-2 text-sm text-gray-500">
                         <button className="flex items-center gap-1 hover:text-gray-800"><Filter size={14} /> Filter</button>
                     </div>
@@ -76,20 +146,34 @@ export const AgentInterface: React.FC = () => {
                         {[1, 2, 3].map(i => <div key={i} className="h-48 bg-gray-200 animate-pulse rounded-xl" />)}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {projects.map(project => {
-                            const projectAlerts = alerts.filter(a => a.projectId === project.id && !project.dismissedAlerts.includes(a.id));
-                            return (
-                                <ProjectCard
-                                    key={project.id}
-                                    project={project}
-                                    alerts={projectAlerts}
-                                    onDismissClick={handleDismiss}
-                                    onHistoryClick={setTimelineProject}
-                                />
-                            );
-                        })}
-                    </div>
+                    <>
+                        {viewMode === 'cards' ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {projects
+                                    .filter(project => filterStatus === 'All' || project.health === filterStatus)
+                                    .filter(project => ownerFilter === 'All' || project.owner === ownerFilter)
+                                    .map(project => {
+                                        const projectAlerts = alerts.filter(a => a.projectId === project.id && !project.dismissedAlerts.includes(a.id));
+                                        return (
+                                            <ProjectCard
+                                                key={project.id}
+                                                project={project}
+                                                alerts={projectAlerts}
+                                                onDismissClick={handleDismiss}
+                                                onHistoryClick={setTimelineProject}
+                                            />
+                                        );
+                                    })}
+                            </div>
+                        ) : (
+                            <ProjectTable
+                                projects={projects.filter(project => (filterStatus === 'All' || project.health === filterStatus) && (ownerFilter === 'All' || project.owner === ownerFilter))}
+                                alerts={alerts}
+                                onDismissClick={handleDismiss}
+                                onHistoryClick={setTimelineProject}
+                            />
+                        )}
+                    </>
                 )}
             </main>
 
