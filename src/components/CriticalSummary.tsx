@@ -20,10 +20,10 @@ export const CriticalSummary: React.FC<Props> = ({ alerts, projects, onFilterCha
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <button
-                onClick={() => onFilterChange('At Risk')}
-                className={`text-left transition-all p-4 rounded-xl border flex items-center gap-4 ${activeFilter === 'At Risk'
-                        ? 'ring-2 ring-red-500 bg-red-50 border-red-200'
-                        : highRiskCount > 0 ? 'bg-red-50 border-red-100 text-red-900 hover:border-red-300' : 'bg-white border-gray-200 hover:border-gray-300'
+                onClick={() => onFilterChange('要注意')}
+                className={`text-left transition-all p-4 rounded-xl border flex items-center gap-4 ${activeFilter === '要注意'
+                    ? 'ring-2 ring-red-500 bg-red-50 border-red-200'
+                    : highRiskCount > 0 ? 'bg-red-50 border-red-100 text-red-900 hover:border-red-300' : 'bg-white border-gray-200 hover:border-gray-300'
                     }`}
             >
                 <div className={`p-3 rounded-full ${highRiskCount > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>
@@ -31,17 +31,17 @@ export const CriticalSummary: React.FC<Props> = ({ alerts, projects, onFilterCha
                 </div>
                 <div>
                     <h3 className="text-2xl font-bold">{highRiskCount}</h3>
-                    <p className="text-sm font-medium opacity-80">High Risk Projects</p>
+                    <p className="text-sm font-medium opacity-80">高リスクプロジェクト</p>
                 </div>
             </button>
 
             <button
-                onClick={() => onFilterChange('Delayed')} // Mapping Blockers to Delayed or we need a 'Blocker' filter? 
+                onClick={() => onFilterChange('遅延')} // Mapping Blockers to Delayed or we need a 'Blocker' filter? 
                 // For now let's map it to Delayed if we want to show anything problematic. 
                 // Actually the user asked for filtering logic. Let's make it status-based mainly.
-                className={`text-left transition-all p-4 rounded-xl border flex items-center gap-4 ${activeFilter === 'Delayed'
-                        ? 'ring-2 ring-amber-500 bg-amber-50 border-amber-200'
-                        : blockerCount > 0 ? 'bg-amber-50 border-amber-100 text-amber-900 hover:border-amber-300' : 'bg-white border-gray-200 hover:border-gray-300'
+                className={`text-left transition-all p-4 rounded-xl border flex items-center gap-4 ${activeFilter === '遅延'
+                    ? 'ring-2 ring-amber-500 bg-amber-50 border-amber-200'
+                    : blockerCount > 0 ? 'bg-amber-50 border-amber-100 text-amber-900 hover:border-amber-300' : 'bg-white border-gray-200 hover:border-gray-300'
                     }`}
             >
                 <div className={`p-3 rounded-full ${blockerCount > 0 ? 'bg-amber-100' : 'bg-gray-100'}`}>
@@ -49,15 +49,15 @@ export const CriticalSummary: React.FC<Props> = ({ alerts, projects, onFilterCha
                 </div>
                 <div>
                     <h3 className="text-2xl font-bold">{blockerCount}</h3>
-                    <p className="text-sm font-medium opacity-80">Client Blockers</p>
+                    <p className="text-sm font-medium opacity-80">クライアントブロッカー</p>
                 </div>
             </button>
 
             <button
-                onClick={() => onFilterChange('Delayed')}
-                className={`text-left transition-all p-4 rounded-xl border flex items-center gap-4 ${activeFilter === 'Delayed'
-                        ? 'ring-2 ring-orange-500 bg-orange-50 border-orange-200'
-                        : overdueCount > 0 ? 'bg-orange-50 border-orange-100 text-orange-900 hover:border-orange-300' : 'bg-white border-gray-200 hover:border-gray-300'
+                onClick={() => onFilterChange('遅延')}
+                className={`text-left transition-all p-4 rounded-xl border flex items-center gap-4 ${activeFilter === '遅延'
+                    ? 'ring-2 ring-orange-500 bg-orange-50 border-orange-200'
+                    : overdueCount > 0 ? 'bg-orange-50 border-orange-100 text-orange-900 hover:border-orange-300' : 'bg-white border-gray-200 hover:border-gray-300'
                     }`}
             >
                 <div className={`p-3 rounded-full ${overdueCount > 0 ? 'bg-orange-100' : 'bg-gray-100'}`}>
@@ -65,7 +65,7 @@ export const CriticalSummary: React.FC<Props> = ({ alerts, projects, onFilterCha
                 </div>
                 <div>
                     <h3 className="text-2xl font-bold">{overdueCount}</h3>
-                    <p className="text-sm font-medium opacity-80">Missed Milestones</p>
+                    <p className="text-sm font-medium opacity-80">期限超過マイルストーン</p>
                 </div>
             </button>
         </div>

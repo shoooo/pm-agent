@@ -125,19 +125,19 @@ export const AgentInterface: React.FC = () => {
                 <div className="flex justify-between items-end mb-4">
                     <div className="flex items-center gap-4">
                         <h2 className="text-lg font-bold text-gray-800">
-                            {filterStatus === 'All' ? 'Active Projects' : `${filterStatus} Projects`}
+                            {filterStatus === 'All' ? 'アクティブプロジェクト' : `${filterStatus}のプロジェクト`}
                         </h2>
                         {filterStatus !== 'All' && (
                             <button
                                 onClick={() => setFilterStatus('All')}
                                 className="text-xs text-blue-600 hover:underline"
                             >
-                                Clear filter
+                                フィルタークリア
                             </button>
                         )}
                     </div>
                     <div className="flex gap-2 text-sm text-gray-500">
-                        <button className="flex items-center gap-1 hover:text-gray-800"><Filter size={14} /> Filter</button>
+                        <button className="flex items-center gap-1 hover:text-gray-800"><Filter size={14} /> フィルター</button>
                     </div>
                 </div>
 

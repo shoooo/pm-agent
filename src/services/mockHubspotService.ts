@@ -33,7 +33,7 @@ export interface ActivityLog {
 export interface Project {
     id: string;
     name: string;
-    health: 'On Track' | 'At Risk' | 'Delayed';
+    health: '順調' | '要注意' | '遅延';
     nextMilestone: Milestone;
     tasks: Task[];
     lastActivityDate: string;
@@ -41,13 +41,15 @@ export interface Project {
     emails: Email[];
     dismissedAlerts: string[]; // List of Alert IDs
     activityLog: ActivityLog[];
+    riskCategory?: string;
+    trend?: 'Improving' | 'Stable' | 'Declining';
 }
 
 export const mockProjects: Project[] = [
     {
         id: '1',
         name: 'Acme Corp Onboarding',
-        health: 'On Track',
+        health: '順調',
         nextMilestone: { name: 'Kickoff Meeting', dueDate: '2024-03-01', status: 'Pending' },
         tasks: [
             { id: 't1', name: 'Submit Intake Form', assignee: 'Client', dueDate: '2024-02-28', status: 'Pending' },
@@ -64,7 +66,7 @@ export const mockProjects: Project[] = [
     {
         id: '2',
         name: 'Global Tech Implementation',
-        health: 'At Risk',
+        health: '要注意',
         nextMilestone: { name: 'API Integration', dueDate: '2024-02-20', status: 'Pending' }, // Overdue
         tasks: [
             { id: 't3', name: 'Provide API Keys', assignee: 'Client', dueDate: '2024-02-18', status: 'Pending' } // Blocker
@@ -90,7 +92,7 @@ export const mockProjects: Project[] = [
     {
         id: '3',
         name: 'StartUp Inc Pilot',
-        health: 'Delayed',
+        health: '遅延',
         nextMilestone: { name: 'User Training', dueDate: '2024-02-10', status: 'Pending' },
         tasks: [],
         lastActivityDate: '2024-01-20',
@@ -102,7 +104,7 @@ export const mockProjects: Project[] = [
     {
         id: '4',
         name: 'MegaCorp Expansion',
-        health: 'At Risk', // Initial state, logic will confirm
+        health: '要注意', // Initial state, logic will confirm
         nextMilestone: { name: 'Go Live', dueDate: '2024-02-15', status: 'Pending' },
         tasks: [],
         lastActivityDate: '2024-02-18',

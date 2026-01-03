@@ -11,7 +11,7 @@ interface Props {
     onHistoryClick: (project: Project) => void;
 }
 
-export const ProjectTable: React.FC<Props> = ({ projects, alerts, onDismissClick, onHistoryClick }) => {
+export const ProjectTable: React.FC<Props> = ({ projects, alerts, onHistoryClick }) => {
     return (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
@@ -28,9 +28,6 @@ export const ProjectTable: React.FC<Props> = ({ projects, alerts, onDismissClick
                     <tbody className="divide-y divide-gray-100">
                         {projects.map((project) => {
                             const projectAlerts = alerts.filter(a => a.projectId === project.id && !project.dismissedAlerts.includes(a.id));
-                            const statusColor = project.health === 'At Risk' ? 'text-red-600 bg-red-50' :
-                                project.health === 'Delayed' ? 'text-amber-600 bg-amber-50' :
-                                    'text-green-600 bg-green-50';
 
                             return (
                                 <tr key={project.id} className="hover:bg-gray-50 transition-colors group">
@@ -46,8 +43,8 @@ export const ProjectTable: React.FC<Props> = ({ projects, alerts, onDismissClick
                                     <td className="px-6 py-4">
                                         <span className={clsx(
                                             "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
-                                            project.health === 'At Risk' ? "bg-red-50 text-red-700 border-red-100" :
-                                                project.health === 'Delayed' ? "bg-amber-50 text-amber-700 border-amber-100" :
+                                            project.health === '要注意' ? "bg-red-50 text-red-700 border-red-100" :
+                                                project.health === '遅延' ? "bg-amber-50 text-amber-700 border-amber-100" :
                                                     "bg-green-50 text-green-700 border-green-100"
                                         )}>
                                             {project.health}

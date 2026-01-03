@@ -24,7 +24,7 @@ export const analyzeProject = (project: Project): Alert[] => {
         if (isOverdue) {
             if (isNegativeSentiment) {
                 // RED RISK: Overdue + Angry Client
-                project.health = 'At Risk'; // Side-effect: Updating project health in place for UI
+                project.health = '要注意'; // Side-effect: Updating project health in place for UI
                 alerts.push({
                     id: `milestone-critical-${project.id}`,
                     projectId: project.id,
@@ -35,7 +35,7 @@ export const analyzeProject = (project: Project): Alert[] => {
                 });
             } else {
                 // YELLOW RISK: Just Overdue
-                project.health = 'Delayed';
+                project.health = '遅延';
                 alerts.push({
                     id: `milestone-overdue-${project.id}`,
                     projectId: project.id,
@@ -79,7 +79,7 @@ export const analyzeProject = (project: Project): Alert[] => {
     const diffTime = Math.abs(today.getTime() - lastActive.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays > 7 && project.health !== 'On Track') {
+    if (diffDays > 7 && project.health !== '順調') {
         alerts.push({
             id: `stalled-${project.id}`,
             projectId: project.id,

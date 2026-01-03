@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const path = require('path');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
@@ -15,11 +16,13 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
 const HUBSPOT_ACCESS_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN;
 
 if (!HUBSPOT_ACCESS_TOKEN) {
-    console.error('ERROR: HUBSPOT_ACCESS_TOKEN is not defined in .env');
-    process.exit(1);
+    console.error('ERROR: HUBSPOT_ACCESS_TOKEN is not defined in environment variables');
 }
 
 // Proxy endpoint for HubSpot - Deals
@@ -76,7 +79,7 @@ app.post('/api/analyze', async (req, res) => {
         const { messages, projectName, deadline } = req.body;
 
         if (!messages || messages.length === 0) {
-            return res.json({ sentimentScore: 50, atRisk: false, summary: "No recent communications." });
+            return res.json({ sentimentScore: 50, atRisk: false, riskCategory: 'None', summary: "No recent communications.", trend: 'Stable' });
         }
 
         const prompt = `
@@ -86,12 +89,14 @@ app.post('/api/analyze', async (req, res) => {
             Communications (Newest first):
             ${messages.map(m => `Date: ${m.date}\nBody: ${m.body}`).join('\n---\n')}
             
-            Based on these, determine if the project is "At Risk" (Client is frustrated, there are blockers, or deadline is clearly impossible).
+            Determine:
+            1. sentimentScore: (0 to 100, where 0 is extremely angry/frustrated and 100 is extremely happy).
+            2. atRisk: (true/false) based on blockers or missed deadlines.
+            3. riskCategory: Choose one: 'Communication', 'Technical', 'Timeline', or 'None'.
+            4. summary: A 1-sentence summary of the current health or primary blocker in Japanese.
+            5. trend: Based on these messages, is the situation 'Improving', 'Stable', or 'Declining'?
             
-            Return ONLY a valid JSON object with:
-            - sentimentScore: (0 to 100, where 0 is extremely angry/frustrated and 100 is extremely happy)
-            - atRisk: (true/false)
-            - summary: (A 1-sentence summary of the current health or primary blocker)
+            Return ONLY a valid JSON object.
         `;
 
         const result = await model.generateContent(prompt);
@@ -108,6 +113,11 @@ app.post('/api/analyze', async (req, res) => {
     }
 });
 
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 app.listen(PORT, () => {
-    console.log(`Backend proxy server running on http://localhost:${PORT}`);
+    console.log(`Backend server running on http://localhost:${PORT}`);
 });

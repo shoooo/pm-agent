@@ -14,12 +14,12 @@ interface Props {
 
 export const ProjectCard: React.FC<Props> = ({ project, alerts, onDismissClick, onHistoryClick }) => {
     const primaryAlert = alerts[0]; // Show top priority alert
-    const isRisk = project.health === 'At Risk' || project.health === 'Delayed';
+    const isRisk = project.health === '要注意' || project.health === '遅延';
 
     const healthColor = {
-        'On Track': 'bg-green-100 text-green-700',
-        'At Risk': 'bg-red-100 text-red-700',
-        'Delayed': 'bg-orange-100 text-orange-700'
+        '順調': 'bg-green-100 text-green-700',
+        '要注意': 'bg-red-100 text-red-700',
+        '遅延': 'bg-orange-100 text-orange-700'
     }[project.health];
 
     return (
@@ -33,12 +33,21 @@ export const ProjectCard: React.FC<Props> = ({ project, alerts, onDismissClick, 
                     <History size={14} /> History
                 </button>
             </div>
-            <div className="flex justify-between items-start mb-4">
+            <div className="flex justify-between items-start mb-2">
                 <div>
                     <h3 className="font-bold text-lg text-gray-900 leading-tight">{project.name}</h3>
-                    <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
-                        <User size={12} />
-                        {project.owner}
+                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                        <span className="flex items-center gap-1"><User size={12} /> {project.owner}</span>
+                        {project.riskCategory && project.riskCategory !== 'None' && (
+                            <span className="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium">
+                                {project.riskCategory}
+                            </span>
+                        )}
+                        {project.trend && (
+                            <span className={`flex items-center gap-0.5 font-medium ${project.trend === 'Declining' ? 'text-red-500' : project.trend === 'Improving' ? 'text-green-500' : 'text-blue-500'}`}>
+                                {project.trend === 'Declining' ? '↘' : project.trend === 'Improving' ? '↗' : '→'} {project.trend}
+                            </span>
+                        )}
                     </div>
                 </div>
                 <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${healthColor}`}>
